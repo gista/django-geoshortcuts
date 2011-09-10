@@ -1,4 +1,4 @@
-from mapdata.models import *
+#from mapdata.models import *
 import StringIO
 from datetime import datetime
 from gpx import *
