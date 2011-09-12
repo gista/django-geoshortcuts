@@ -1,14 +1,17 @@
-from django.test import TestCase
-from models import *
-
-from shortcuts import *
-from django.contrib.gis.geos import Polygon, LineString, Point
-from django.contrib.gis.gdal import DataSource
 from datetime import datetime, date
 import time
 import operator
 import tempfile
 import shutil
+
+from django.test import TestCase
+from django.contrib.gis.geos import Polygon, LineString, Point
+from django.contrib.gis.gdal import DataSource
+
+from geoshortcuts import find_geom_field
+from geoshortcuts.geojson import render_to_geojson
+from geoshortcuts.gpx import *
+from test_app.models import *
 
 GPX_LAYERS = ("waypoints", "routes", "tracks", "route_points", "track_points")
 
