@@ -80,7 +80,7 @@ def render_to_geojson(queryset, transform=None, simplify=None, bbox=None, maxfea
 
 	if bbox is not None:
 		#queryset.filter(<geom_field>__intersects=bbox)
-		queryset = queryset.filter(**{'{0}__intersects'.format(geom_field):bbox})
+		queryset = queryset.filter(**{'%s__intersects' % geom_field: bbox})
 
 	if maxfeatures is not None:
 		queryset.order_by(maxfeatures.priority_field)
@@ -105,7 +105,7 @@ def render_to_geojson(queryset, transform=None, simplify=None, bbox=None, maxfea
 		crs = dict()
 		crs[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_LINK
 		crs_properties = dict()
-		crs_properties[GEOJSON_FIELD_HREF] = '{0}{1}/'.format(SPATIAL_REF_SITE, to_srid)
+		crs_properties[GEOJSON_FIELD_HREF] = '%s%s/' % (SPATIAL_REF_SITE, to_srid)
 		crs_properties[GEOJSON_FIELD_TYPE] = 'proj4'
 		crs[GEOJSON_FIELD_PROPERTIES] = crs_properties
 		collection[GEOJSON_FIELD_CRS] = crs
@@ -219,7 +219,7 @@ def __decorate_waypoint(poi, poi_mapping, wpt):
 		      GPX_FIELD_DESC:unicode, GPX_FIELD_SRC:unicode, GPX_FIELD_SYM:unicode, GPX_FIELD_TYPE:unicode,
 		      GPX_FIELD_SAT:pos_int_constr, GPX_FIELD_HDOP:float, GPX_FIELD_VDOP:float, GPX_FIELD_PDOP:float}
 	for gpx_field, poi_field in poi_mapping.items():
-		func_name = 'set_{0}'.format(gpx_field)
+		func_name = 'set_%s' % gpx_field
 		poi_value = getattr(poi, poi_field)
 		if poi_value is None:
 			continue
@@ -242,7 +242,7 @@ def __decorate_route(path, path_mapping, rte):
 	gpx_fields = {GPX_FIELD_NAME:unicode, GPX_FIELD_CMT:unicode, GPX_FIELD_DESC:unicode, GPX_FIELD_SRC:unicode,
 		      GPX_FIELD_NUMBER:pos_int_constr, GPX_FIELD_TYPE:unicode}
 	for gpx_field, path_field in path_mapping.items():
-		func_name = 'set_{0}'.format(gpx_field)
+		func_name = 'set_%s' % gpx_field
 		path_value = getattr(path, path_field)
 		if path_value is None:
 			continue

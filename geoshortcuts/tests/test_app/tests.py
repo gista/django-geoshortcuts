@@ -4,7 +4,6 @@ from models import *
 from shortcuts import *
 from django.contrib.gis.geos import Polygon, LineString, Point
 from django.contrib.gis.gdal import DataSource
-from functools import reduce
 from datetime import datetime, date
 import time
 import operator
@@ -126,11 +125,13 @@ class ShortcutsTest(TestCase):
 		"""Generates DataSource from GPX. Uses render_to_gpx() shortcut.
 		It has the same parameters as render_to_gpx()"""
 		gpx = render_to_gpx('Matus Valo', poi_qs, path_qs, METADATA, POI_MAPPING, PATH_MAPPING)
-		gpx_fname = '{0}/test_render_to_gpx{1}.xml'.format(self.TMP_DIR, int(time.time()))
+		gpx_fname = '%s/test_render_to_gpx%s.xml' % (self.TMP_DIR, int(time.time()))
 
-		with open(gpx_fname, 'w') as gpx_file:
+		gpx_file = open(gpx_fname, 'w')
+		try:
 			gpx_file.write(gpx)
-
+		finally:
+			gpx_file.close()
 		return DataSource(gpx_fname)
 
 	def test_poi_render_to_gpx(self):
@@ -236,8 +237,9 @@ class ShortcutsTest(TestCase):
 
 	def test_poi_render_to_gpx_fail(self):
 		"""Tests failing render_to_gpx() when no data passed."""
-		with self.assertRaises(ValueError):
-			render_to_gpx('Matus Valo')
+		#with self.assertRaises(ValueError):
+		#	render_to_gpx('Matus Valo')
+		self.assertRaises(ValueError, render_to_gpx, 'Matus Valo')
 
 	def __generate_data_source_from_json(self, query_set, proj_transform=None, geom_simplify=None,
 					     bbox=None, maxfeatures=None, properties=None):
@@ -245,10 +247,13 @@ class ShortcutsTest(TestCase):
 		Has the same parameters as render_to_geojson()
 		"""
 		json = render_to_geojson(query_set, proj_transform, geom_simplify, bbox, maxfeatures, properties)
-		json_fname = '{0}/test_poi_render_to_json{1}.geojson'.format(self.TMP_DIR, int(time.time()))
+		json_fname = '%s/test_poi_render_to_json%s.geojson' % (self.TMP_DIR, int(time.time()))
 
-		with open(json_fname, 'w') as json_file:
+		json_file = open(json_fname, 'w')
+		try:
 			json_file.write(json)
+		finally:
+			json_file.close()
 		return DataSource(json_fname)
 
 	def __test_render_to_json(self, geom_query, properties=None):
