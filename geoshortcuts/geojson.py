@@ -82,13 +82,12 @@ def render_to_geojson(queryset, transform=None, simplify=None, bbox=None, maxfea
 		for fname in properties:
 			if fname == geom_field:
 				continue
-			feat[GEOJSON_FIELD_PROPERTIES][fname] =				\
-					__simple_render_to_json(getattr(item, fname))
+			feat[GEOJSON_FIELD_PROPERTIES][fname] = __simple_render_to_json(getattr(item, fname))
 		feat[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_FEATURE
-		g = getattr(item, geom_field)
+		geom = getattr(item, geom_field)
 		if simplify is not None:
-			g = g.simplify(simplify)
-		feat[GEOJSON_FIELD_GEOMETRY] = simplejson.loads(g.geojson)
+			geom = geom.simplify(simplify)
+		feat[GEOJSON_FIELD_GEOMETRY] = simplejson.loads(geom.geojson)
 		features.append(feat)
 
 	collection[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_FEATURE_COLLECTION
