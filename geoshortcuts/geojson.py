@@ -27,52 +27,62 @@ def __simple_render_to_json(obj):
 	"""Converts python objects to simple json objects (int, float, string)"""
 	if type(obj) == int or type(obj) == float or type(obj) == bool:
 		return obj
+	elif type(obj) == unicode:
+		return obj.encode("utf-8")
 	else:
 		return str(obj)
 
-def render_to_geojson(queryset, transform=None, simplify=None, bbox=None, maxfeatures=None, properties=None, prettyprint=False):
+def render_to_geojson(queryset, projection=None, simplify=None, extent=None, maxfeatures=None, priorityfield=None, properties=None, prettyprint=False):
 	'''
 	Shortcut to render a GeoJson FeatureCollection from a Django QuerySet.
 	Currently computes a bbox and adds a crs member as a sr.org link.
+	Parameters:
+	* queryset of models containing geometry data
+	* projection used when geometry data should be transformed to other projection
+	* simplify (float) value specifies tolerance in Douglas-Peucker algorithm for simplifying geometry
+	* extent (django.contrib.gis.geos.Polygon instance) that which bounds rendered features
 	* maxfeatures parameter gives maximum number of rendered features based on priority field.
-	Parameter should be instance of collections.namedtuple('MaxFeatures', ['maxfeatures', 'priority_field'])
-	* bbox is boundary box (django.contrib.gis.geos.Polygon instance) which bounds rendered features
+	* priorityfield (string) - name of the priority field used for reducing features
+	* properties - list of model's non geometry fields names included in geojson
+	* prettyprint flag influencing indentation used in geojson (for better readability)
 	'''
 
 	geom_field = find_geom_field(queryset)
 
-	if bbox is not None:
-		#queryset.filter(<geom_field>__intersects=bbox)
-		queryset = queryset.filter(**{'%s__intersects' % geom_field: bbox})
+	if extent is not None:
+		#queryset.filter(<geom_field>__intersects=extent)
+		queryset = queryset.filter(**{'%s__intersects' % geom_field: extent})
 
 	if maxfeatures is not None:
-		queryset.order_by(maxfeatures.priority_field)
-		queryset = queryset[:maxfeatures.maxfeatures]
+		if priorityfield is None:
+			raise RuntimeError("priorityfield must be defined")
+		queryset.order_by(priority_field)
+		queryset = queryset[:maxfeatures]
 
-	srid = None
-	if len(queryset) > 0:
-		srid = getattr(queryset[0], geom_field).srid
+	src_projection = None
+	if queryset.exists():
+		src_projection = getattr(queryset[0], geom_field).srid
 
-	if transform is not None:
-		to_srid = transform
-		queryset = queryset.transform(to_srid)
-	else:
-		to_srid = srid
+	if projection is None:
+		projection = src_projection
+
+	if projection is not None and src_projection != projection:
+		queryset = queryset.transform(projection)
 
 	if properties is None:
 		properties = queryset.model._meta.get_all_field_names()
 
 	features = list()
 	collection = dict()
-	if srid is not None:
+	if src_projection is not None:
 		crs = dict()
 		crs[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_LINK
 		crs_properties = dict()
-		crs_properties[GEOJSON_FIELD_HREF] = '%s%s/' % (SPATIAL_REF_SITE, to_srid)
+		crs_properties[GEOJSON_FIELD_HREF] = '%s%s/' % (SPATIAL_REF_SITE, projection)
 		crs_properties[GEOJSON_FIELD_TYPE] = 'proj4'
 		crs[GEOJSON_FIELD_PROPERTIES] = crs_properties
 		collection[GEOJSON_FIELD_CRS] = crs
-		collection[GEOJSON_FIELD_SRID] = to_srid
+		collection[GEOJSON_FIELD_SRID] = projection
 	for item in queryset:
 		feat = dict()
 		feat[GEOJSON_FIELD_ID] = item.pk
@@ -93,11 +103,11 @@ def render_to_geojson(queryset, transform=None, simplify=None, bbox=None, maxfea
 	collection[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_FEATURE_COLLECTION
 	collection[GEOJSON_FIELD_FEATURES] = features
 
-	if len(queryset) > 0:
-		if transform is not None:
+	if queryset.exists():
+		if projection is not None and src_projection != projection:
 			poly = Polygon.from_bbox(queryset.extent())
-			poly.srid = srid
-			poly.transform(to_srid)
+			poly.srid = src_projection
+			poly.transform(projection)
 			collection[GEOJSON_FIELD_BBOX] = poly.extent
 		else:
 			collection[GEOJSON_FIELD_BBOX] = queryset.extent()

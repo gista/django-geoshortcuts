@@ -245,11 +245,11 @@ class ShortcutsTest(TestCase):
 		self.assertRaises(ValueError, render_to_gpx, 'Matus Valo')
 
 	def __generate_data_source_from_json(self, query_set, proj_transform=None, geom_simplify=None,
-					     bbox=None, maxfeatures=None, properties=None):
+					     extent=None, maxfeatures=None, properties=None):
 		"""Generates DataSource based on json generated with render_to_geojson() shortcut.
 		Has the same parameters as render_to_geojson()
 		"""
-		json = render_to_geojson(query_set, proj_transform, geom_simplify, bbox, maxfeatures, properties)
+		json = render_to_geojson(query_set, projection=proj_transform, simplify=geom_simplify, extent=extent, maxfeatures=maxfeatures, properties=properties)
 		json_fname = '%s/test_poi_render_to_json%s.geojson' % (self.TMP_DIR, int(time.time()))
 
 		json_file = open(json_fname, 'w')

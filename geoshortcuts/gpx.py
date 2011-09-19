@@ -136,15 +136,15 @@ def __decorate_route(path, path_mapping, rte):
 	return rte
 
 
-def render_to_gpx(creator, poi_qs=None, path_qs=None, meta=None, poi_mapping = None,
+def render_to_gpx(creator, poi_queryset=None, path_queryset=None, meta=None, poi_mapping = None,
 		  path_mapping = None):
 	"""Renders querysets to GPX format. Parameters:
-	creator     - string name of creator of the GPX file
-	poi_qs      - Queryset of points
-	path_qs     - Queryset of LineStrings
-	meta        - Dict with metainformations of GPX
-	poi_mapping - Dict defining mapping between POI model and GPX Waypoint fields
-	path_mapping - Dict defining mapping between POI model and GPX Route fields
+	creator       - string name of creator of the GPX file
+	poi_queryset  - Queryset of points
+	path_queryset - Queryset of LineStrings
+	meta          - Dict with metainformations of GPX
+	poi_mapping   - Dict defining mapping between POI model and GPX Waypoint fields
+	path_mapping  - Dict defining mapping between POI model and GPX Route fields
 
 	Schema of dictionary meta (based on http://www.topografix.com/gpx/1/1/):
 	metadata = {
@@ -208,7 +208,7 @@ def render_to_gpx(creator, poi_qs=None, path_qs=None, meta=None, poi_mapping = N
 	type 	- xsd:string - Type (classification) of route.
 	"""
 
-	if poi_qs is None and path_qs is None:
+	if poi_queryset is None and path_queryset is None:
 		raise ValueError
 	str_out = StringIO.StringIO()
 	gpx = gpxType(version=1.1, creator=creator)
@@ -219,9 +219,9 @@ def render_to_gpx(creator, poi_qs=None, path_qs=None, meta=None, poi_mapping = N
 	y -- latitude
 	"""
 	poi_bounds = (float('inf'), float('inf'), float('-inf'), float('-inf')) \
-			if poi_qs is None else poi_qs.extent()
+			if poi_queryset is None else poi_queryset.extent()
 	path_bounds = (float('inf'), float('inf'), float('-inf'), float('-inf')) \
-			if path_qs is None else path_qs.extent()
+			if path_queryset is None else path_queryset.extent()
 	bounds = boundsType(minlon=min(poi_bounds[0], path_bounds[0]),
 			    minlat=min(poi_bounds[1], path_bounds[1]),
 			    maxlon=max(poi_bounds[2], path_bounds[2]),
@@ -234,9 +234,9 @@ def render_to_gpx(creator, poi_qs=None, path_qs=None, meta=None, poi_mapping = N
 		metadata = metadataType(bounds = bounds)
 	gpx.set_metadata(metadata)
 
-	if poi_qs is not None:
-		gfield_name = find_geom_field(poi_qs)
-		for poi in poi_qs:
+	if poi_queryset is not None:
+		gfield_name = find_geom_field(poi_queryset)
+		for poi in poi_queryset:
 			wpt = wptType(
 				lon=getattr(poi, gfield_name).get_x(),
 				lat=getattr(poi, gfield_name).get_y(),
@@ -244,9 +244,9 @@ def render_to_gpx(creator, poi_qs=None, path_qs=None, meta=None, poi_mapping = N
 			if poi_mapping is not None:
 				wpt = __decorate_waypoint(poi, poi_mapping, wpt)
 			gpx.add_wpt(wpt)
-	if path_qs is not None:
-		gfield_name = find_geom_field(path_qs)
-		for path in path_qs:
+	if path_queryset is not None:
+		gfield_name = find_geom_field(path_queryset)
+		for path in path_queryset:
 			rte = rteType()
 			if len(getattr(path, gfield_name)[0]) == 3:
 				rte.set_rtept([wptType(lon=p[0], lat=p[1], ele=p[2]) \
