@@ -14,4 +14,4 @@ Generating of gpx_parser.py (GPX data stuctures and parser):
 It is required to install generateDS 2.5a (version 2.6a will generate
 gYear type differently and unit tests will not pass successfully).
 
-python generateDS.py -o gpx_parser.py gpx.xsd
+python generateDS.py -o gpx_parser.py --external-encoding='utf-8' gpx.xsd
