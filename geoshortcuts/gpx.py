@@ -219,9 +219,9 @@ def render_to_gpx(creator, poi_queryset=None, path_queryset=None, meta=None, poi
 	y -- latitude
 	"""
 	poi_bounds = (float('inf'), float('inf'), float('-inf'), float('-inf')) \
-			if poi_queryset is None else poi_queryset.extent()
+			if poi_queryset is None or not poi_queryset.exists() else poi_queryset.extent()
 	path_bounds = (float('inf'), float('inf'), float('-inf'), float('-inf')) \
-			if path_queryset is None else path_queryset.extent()
+			if path_queryset is None or not path_queryset.exists() else path_queryset.extent()
 	bounds = boundsType(minlon=min(poi_bounds[0], path_bounds[0]),
 			    minlat=min(poi_bounds[1], path_bounds[1]),
 			    maxlon=max(poi_bounds[2], path_bounds[2]),
