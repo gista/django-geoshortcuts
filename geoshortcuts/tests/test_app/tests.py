@@ -127,7 +127,7 @@ class ShortcutsTest(TestCase):
 	def __generate_data_source_from_gpx(self, poi_qs=None, path_qs=None):
 		"""Generates DataSource from GPX. Uses render_to_gpx() shortcut.
 		It has the same parameters as render_to_gpx()"""
-		gpx = render_to_gpx('Matus Valo', poi_qs, path_qs, METADATA, POI_MAPPING, PATH_MAPPING)
+		gpx = render_to_gpx('Foo Bar', poi_qs, path_qs, METADATA, POI_MAPPING, PATH_MAPPING)
 		gpx_fname = '%s/test_render_to_gpx%s.xml' % (self.TMP_DIR, int(time.time()))
 
 		gpx_file = open(gpx_fname, 'w')
@@ -240,9 +240,7 @@ class ShortcutsTest(TestCase):
 
 	def test_poi_render_to_gpx_fail(self):
 		"""Tests failing render_to_gpx() when no data passed."""
-		#with self.assertRaises(ValueError):
-		#	render_to_gpx('Matus Valo')
-		self.assertRaises(ValueError, render_to_gpx, 'Matus Valo')
+		self.assertRaises(ValueError, render_to_gpx, 'Foo Bar')
 
 	def __generate_data_source_from_json(self, query_set, proj_transform=None, geom_simplify=None,
 					     extent=None, maxfeatures=None, properties=None):
