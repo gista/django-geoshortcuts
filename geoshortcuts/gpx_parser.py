@@ -403,7 +403,7 @@ class gpxType(GeneratedsSuper):
     def set_version(self, version): self.version = version
     def get_creator(self): return self.creator
     def set_creator(self, creator): self.creator = creator
-    def export(self, outfile, level, namespace_='', name_='gpxType', namespacedef_=''):
+    def export(self, outfile, level, namespace_='', name_='gpxType', namespacedef_='xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1"'):
         showIndent(outfile, level)
         outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
         self.exportAttributes(outfile, level, [], namespace_, name_='gpxType')
