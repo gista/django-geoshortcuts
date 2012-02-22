@@ -70,7 +70,7 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 		queryset = queryset.transform(projection)
 
 	if properties is None:
-		properties = queryset.model._meta.get_all_field_names()
+		properties = [field.name for field in queryset.model._meta.fields]
 
 	features = list()
 	collection = dict()
