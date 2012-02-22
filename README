@@ -1,12 +1,12 @@
-Geoshortcuts is a library containing set of shortcuts that can be used in
-GeoDjango applications. It also contains Django application that provides
-unit tests of the library, and which is not required in final installation.
+Django Geoshortcuts
+===================
 
-It provides two main functions:
-* render_to_geojson - generates Geojson string from query set of model
-  containing point, line or polygon geometry column
-* render_to_gpx - generates GPX string from query set of model containing
-  point or line geometry column
+Geoshortcuts is Django shortcuts library capable to return geospatial
+output from Django querysets.
+
+Currently implemented:
+* render_to_geojson - return GeoJSON from point, line or polygon queryset
+* render_to_gpx - return GPX from point or line queryset
 
 
 Generating of gpx_parser.py (GPX data stuctures and parser):
