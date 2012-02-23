@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 setup(
-	name='geoshortcuts',
+	name='django-geoshortcuts',
 	version='0.1',
 	description='set of shortcuts for GeoDjango applications',
 	author='Marcel Dancak, Ivan Mincik, Matus Valo',
