@@ -1,4 +1,5 @@
 
+from django.contrib.gis import gdal
 from django.contrib.gis.geos import Polygon
 from django.utils import simplejson
 
@@ -22,6 +23,17 @@ GEOJSON_FIELD_ID	 = 'id'
 GEOJSON_VALUE_LINK		 = 'link'
 GEOJSON_VALUE_FEATURE		 = 'Feature'
 GEOJSON_VALUE_FEATURE_COLLECTION = 'FeatureCollection'
+
+
+# We are caching SpatialReference objects cause there must be memory leaks in GDAL
+# or in Django's GDAL bindings.
+_SPATIAL_REFERENCES = {}
+def __get_spatial_reference(srid):
+	if srid not in _SPATIAL_REFERENCES:
+		srs = gdal.SpatialReference(srid)
+		_SPATIAL_REFERENCES[srid] = srs
+		return srs
+	return _SPATIAL_REFERENCES[srid]
 
 def __simple_render_to_json(obj):
 	"""Converts python objects to simple json objects (int, float, string)"""
@@ -83,6 +95,7 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 		crs[GEOJSON_FIELD_PROPERTIES] = crs_properties
 		collection[GEOJSON_FIELD_CRS] = crs
 		collection[GEOJSON_FIELD_SRID] = projection
+
 	for item in queryset:
 		feat = dict()
 		feat[GEOJSON_FIELD_ID] = item.pk
@@ -97,7 +110,10 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 		geom = getattr(item, geom_field)
 		if simplify is not None:
 			geom = geom.simplify(simplify)
-		feat[GEOJSON_FIELD_GEOMETRY] = simplejson.loads(geom.geojson)
+
+		# We have to use gdal.OGRGeometry geometry class directly and without srid parameter
+		# to prevent creating a SpatialReference instance, which causes memory leaks
+		feat[GEOJSON_FIELD_GEOMETRY] = simplejson.loads(gdal.OGRGeometry(geom.wkb).json)
 		features.append(feat)
 
 	collection[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_FEATURE_COLLECTION
@@ -106,9 +122,12 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 	if queryset.exists():
 		if projection is not None and src_projection != projection:
 			poly = Polygon.from_bbox(queryset.extent())
-			poly.srid = src_projection
-			poly.transform(projection)
-			collection[GEOJSON_FIELD_BBOX] = poly.extent
+			# We have to use gdal.OGRGeometry geometry class directly and without srid parameter
+			# to prevent creating a SpatialReference instance, which causes memory leaks
+			ogr_geom = gdal.OGRGeometry(poly.wkb)
+			ogr_geom.srs = __get_spatial_reference(src_projection)
+			ogr_geom.transform(__get_spatial_reference(projection))
+			collection[GEOJSON_FIELD_BBOX] = ogr_geom.extent
 		else:
 			collection[GEOJSON_FIELD_BBOX] = queryset.extent()
 
