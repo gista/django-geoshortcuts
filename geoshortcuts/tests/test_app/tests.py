@@ -46,8 +46,6 @@ TEST_POLYS = (
 )
 
 
-GPX_DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
-
 class ShortcutsTest(TestCase):
 	"""Tests of functions render_to_geojson() in shortcuts module.
 	Tests use testing database.
