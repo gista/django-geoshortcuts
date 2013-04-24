@@ -6,12 +6,3 @@ output from Django querysets.
 
 Currently implemented:
 * render_to_geojson - return GeoJSON from point, line or polygon queryset
-* render_to_gpx - return GPX from point or line queryset
-
-
-Generating of gpx_parser.py (GPX data stuctures and parser):
-============================================================
-It is required to install generateDS 2.5a (version 2.6a will generate
-gYear type differently and unit tests will not pass successfully).
-
-python generateDS.py -o gpx_parser.py --external-encoding='utf-8' gpx.xsd

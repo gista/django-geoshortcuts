@@ -1,6 +1,5 @@
-from datetime import datetime, date
+from datetime import datetime
 import time
-import operator
 import tempfile
 import shutil
 
@@ -10,60 +9,8 @@ from django.contrib.gis.gdal import DataSource
 
 from geoshortcuts import find_geom_field
 from geoshortcuts.geojson import render_to_geojson
-from geoshortcuts.gpx import *
 from test_app.models import *
 
-GPX_LAYERS = ("waypoints", "routes", "tracks", "route_points", "track_points")
-
-METADATA = {
-	'name':'test.gpx',
-	'desc':'Testing GPX file',
-	'author': {
-		'name':'Foo Bar',
-		'email':'nobody@somesite.com',
-		'link':{
-			'href':'www.somesite.com',
-			'text':'www.gpxauthor.com',
-			'type':'text/html',
-		}
-	},
-	'copyright':{
-		'author':'Foo Bar',
-		'year':date.today(),
-		'license':'/license/',
-	},
-	'link':[{
-		'href':'www.somesite.com',
-		'text':'Metadata source',
-		'type':'text/html',
-	}],
-	'time':datetime.today(),
-	'keywords':'testing, unstable',
-}
-
-POI_MAPPING = {
-	'time': 'field2',
-	'geoidheight': 'field3',
-	'name': 'field0',
-	'cmt' : 'field0',
-	'desc': 'field0',
-	'src' : 'field0',
-	'sym' : 'field0',
-	'type': 'field1',
-	'sat' : 'field1',
-	'hdop': 'field3',
-	'vdop': 'field3',
-	'pdop': 'field3'
-}
-
-PATH_MAPPING = {
-	'name': 'field0',
-	'cmt' : 'field0',
-	'desc': 'field0',
-	'src' : 'field0',
-	'number' : 'field1',
-	'type' : 'field1',
-}
 
 TTABLES = (
 ('Nizke Tatry'),
@@ -102,7 +49,7 @@ TEST_POLYS = (
 GPX_DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
 
 class ShortcutsTest(TestCase):
-	"""Tests of functions render_to_gpx() and render_to_geojson() in shortcuts module.
+	"""Tests of functions render_to_geojson() in shortcuts module.
 	Tests use testing database.
 	"""
 
@@ -124,123 +71,6 @@ class ShortcutsTest(TestCase):
 				    field5=TestTable.objects.all()[ls[5]], the_geom=tp[6]).save()
 		self.TMP_DIR = tempfile.mkdtemp()
 
-	def __generate_data_source_from_gpx(self, poi_qs=None, path_qs=None):
-		"""Generates DataSource from GPX. Uses render_to_gpx() shortcut.
-		It has the same parameters as render_to_gpx()"""
-		gpx = render_to_gpx('Foo Bar', poi_qs, path_qs, METADATA, POI_MAPPING, PATH_MAPPING)
-		gpx_fname = '%s/test_render_to_gpx%s.xml' % (self.TMP_DIR, int(time.time()))
-
-		gpx_file = open(gpx_fname, 'w')
-		try:
-			gpx_file.write(gpx)
-		finally:
-			gpx_file.close()
-		return DataSource(gpx_fname)
-
-	def test_poi_render_to_gpx(self):
-		"""Tests rendering POIs to GPX with render_to_gpx()."""
-		dbpois = TestPoint.objects.all()
-		self.assertGreater(len(dbpois), 0)
-
-		ds = self.__generate_data_source_from_gpx(poi_qs=dbpois)
-
-		self.assertEqual(len(ds), len(GPX_LAYERS))
-		for layer in ds:
-			self.assertIn(layer.name, GPX_LAYERS)
-			if layer.name == 'waypoints':
-				wp_layer = layer
-				self.assertEqual(len(layer), len(dbpois))
-			else:
-				self.assertEqual(len(layer), 0)
-
-		self.assertEqual(wp_layer.geom_type.name, 'Point')
-
-		dbflist = list()
-		for poi in dbpois:
-			geom_field = find_geom_field(dbpois)
-			dbflist.append([
-				    getattr(poi,POI_MAPPING[GPX_FIELD_TIME]).replace(microsecond=0),
-				    float(getattr(poi,POI_MAPPING[GPX_FIELD_GEOIDHEIGHT])),
-				    str(getattr(poi,POI_MAPPING[GPX_FIELD_NAME])),
-				    str(getattr(poi,POI_MAPPING[GPX_FIELD_CMT])),
-				    str(getattr(poi,POI_MAPPING[GPX_FIELD_DESC])),
-				    str(getattr(poi,POI_MAPPING[GPX_FIELD_SRC])),
-				    str(getattr(poi,POI_MAPPING[GPX_FIELD_SYM])),
-				    str(getattr(poi,POI_MAPPING[GPX_FIELD_TYPE])),
-				    int(getattr(poi,POI_MAPPING[GPX_FIELD_SAT])),
-				    float(getattr(poi,POI_MAPPING[GPX_FIELD_HDOP])),
-				    float(getattr(poi,POI_MAPPING[GPX_FIELD_VDOP])),
-				    float(getattr(poi,POI_MAPPING[GPX_FIELD_PDOP])),
-				    getattr(poi, geom_field)
-				    ])
-		for feature in wp_layer:
-			gpxflist = [datetime.strptime(feature[GPX_FIELD_TIME].as_string(), GPX_DATETIME_FORMAT),
-				    feature[GPX_FIELD_GEOIDHEIGHT].as_double(),
-				    feature[GPX_FIELD_NAME].as_string(),
-				    feature[GPX_FIELD_CMT].as_string(),
-				    feature[GPX_FIELD_DESC].as_string(),
-				    feature[GPX_FIELD_SRC].as_string(),
-				    feature[GPX_FIELD_SYM].as_string(),
-				    feature[GPX_FIELD_TYPE].as_string(),
-				    feature[GPX_FIELD_SAT].as_int(),
-				    feature[GPX_FIELD_HDOP].as_double(),
-				    feature[GPX_FIELD_VDOP].as_double(),
-				    feature[GPX_FIELD_PDOP].as_double(),
-				    Point(feature.geom.tuple, feature[GPX_FIELD_ELE].as_double())
-				    ]
-			self.assertIn(gpxflist, dbflist)
-
-			dbflist.remove(gpxflist)
-
-	def test_path_render_to_gpx(self):
-		"""Tests rendering Paths to GPX with render_to_gpx()."""
-		dbpaths = TestLineString.objects.all()
-		self.assertGreater(len(dbpaths), 0)
-
-		ds = self.__generate_data_source_from_gpx(path_qs=dbpaths)
-		self.assertEqual(len(ds), len(GPX_LAYERS))
-
-		geom_field = find_geom_field(dbpaths)
-		for layer in ds:
-			self.assertIn(layer.name, GPX_LAYERS)
-			if layer.name == 'routes':
-				wp_layer = layer
-				self.assertEqual(len(layer), len(dbpaths))
-			elif layer.name == 'route_points':
-				waypoints_num = reduce(operator.add, (len(getattr(path,geom_field)) for path in dbpaths))
-				self.assertEqual(len(layer), waypoints_num)
-			else:
-				self.assertEqual(len(layer), 0)
-
-		self.assertEqual(wp_layer.geom_type.name, 'LineString')
-		dbflist = list()
-		for path in dbpaths:
-			dbflist.append([
-				    str(getattr(path,PATH_MAPPING[GPX_FIELD_NAME])),
-				    str(getattr(path,PATH_MAPPING[GPX_FIELD_CMT])),
-				    str(getattr(path,PATH_MAPPING[GPX_FIELD_DESC])),
-				    str(getattr(path,PATH_MAPPING[GPX_FIELD_SRC])),
-				    int(getattr(path,PATH_MAPPING[GPX_FIELD_NUMBER])),
-				    str(getattr(path,PATH_MAPPING[GPX_FIELD_TYPE])),
-				    getattr(path, geom_field)
-				])
-		for feature in wp_layer:
-			gpxflist = [
-				    feature[GPX_FIELD_NAME].as_string(),
-				    feature[GPX_FIELD_CMT].as_string(),
-				    feature[GPX_FIELD_DESC].as_string(),
-				    feature[GPX_FIELD_SRC].as_string(),
-				    feature[GPX_FIELD_NUMBER].as_int(),
-				    feature[GPX_FIELD_TYPE].as_string(),
-				    LineString(feature.geom.tuple)
-				]
-			self.assertIn(gpxflist, dbflist)
-
-			dbflist.remove(gpxflist)
-
-	def test_poi_render_to_gpx_fail(self):
-		"""Tests failing render_to_gpx() when no data passed."""
-		self.assertRaises(ValueError, render_to_gpx, 'Foo Bar')
 
 	def __generate_data_source_from_json(self, query_set, proj_transform=None, geom_simplify=None,
 					     extent=None, maxfeatures=None, properties=None):
