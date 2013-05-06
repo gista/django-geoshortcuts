@@ -1,3 +1,4 @@
+from inspect import isroutine
 
 from django.contrib.gis import gdal
 from django.contrib.gis.geos import Polygon
@@ -49,14 +50,14 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 	Shortcut to render a GeoJson FeatureCollection from a Django QuerySet.
 	Currently computes a bbox and adds a crs member as a sr.org link.
 	Parameters:
-	* queryset of models containing geometry data
-	* projection used when geometry data should be transformed to other projection
-	* simplify (float) value specifies tolerance in Douglas-Peucker algorithm for simplifying geometry
-	* extent (django.contrib.gis.geos.Polygon instance) that which bounds rendered features
-	* maxfeatures parameter gives maximum number of rendered features based on priority field.
+	* queryset (django.db.models.query.QuerySet) - queryset of models containing geometry data
+	* projection (int) - projection code used when geometry data should be transformed to other projection
+	* simplify (float) - value specifies tolerance in Douglas-Peucker algorithm for simplifying geometry
+	* extent (django.contrib.gis.geos.Polygon instance) - limits features to features inside extent's bounds
+	* maxfeatures (int) - gives maximum number of rendered features based on priority field
 	* priorityfield (string) - name of the priority field used for reducing features
-	* properties - list of model's non geometry fields names included in geojson
-	* prettyprint flag influencing indentation used in geojson (for better readability)
+	* properties ([string, string or callable, ...]) - list of model's non geometry fields names included in geojson
+	* prettyprint (boolean) - flag influencing indentation used in geojson (for better readability)
 	'''
 
 	geom_field = find_geom_field(queryset)
@@ -82,7 +83,7 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 		queryset = queryset.transform(projection)
 
 	if properties is None:
-		properties = [field.name for field in queryset.model._meta.fields]
+		properties = [(field.name, field.name) for field in queryset.model._meta.fields]
 
 	features = list()
 	collection = dict()
@@ -102,10 +103,14 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 
 		#filling feature properties with dict: {<field_name>:<field_value>}
 		feat[GEOJSON_FIELD_PROPERTIES] = dict()
-		for fname in properties:
-			if fname == geom_field:
+		for title, attrib in properties:
+			if attrib == geom_field:
 				continue
-			feat[GEOJSON_FIELD_PROPERTIES][fname] = __simple_render_to_json(getattr(item, fname))
+			if isroutine(attrib):
+				value = attrib(item)
+			else:
+				value = getattr(item, attrib)
+			feat[GEOJSON_FIELD_PROPERTIES][title] = __simple_render_to_json(value)
 		feat[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_FEATURE
 		geom = getattr(item, geom_field)
 		if simplify is not None:
