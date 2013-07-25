@@ -75,7 +75,7 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 
 	src_projection = None
 	if queryset.exists():
-		src_projection = getattr(queryset[0], geom_field).srid
+		src_projection = queryset.model._meta.get_field(geom_field).srid
 
 	if projection is None:
 		projection = src_projection
