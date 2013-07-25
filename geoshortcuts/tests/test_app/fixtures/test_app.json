@@ -1,0 +1,238 @@
+[
+{
+    "pk": 1, 
+    "model": "test_app.testtable", 
+    "fields": {
+        "field0": "Nizke Tatry"
+    }
+},
+{
+    "pk": 2, 
+    "model": "test_app.testtable", 
+    "fields": {
+        "field0": "Vysoke Tatry"
+    }
+},
+{
+    "pk": 3, 
+    "model": "test_app.testtable", 
+    "fields": {
+        "field0": "Slanske vrchy"
+    }
+},
+{
+    "pk": 4, 
+    "model": "test_app.testtable", 
+    "fields": {
+        "field0": "Kremnicke vrchy"
+    }
+},
+{
+    "pk": 1, 
+    "model": "test_app.testpoint", 
+    "fields": {
+        "field2": "2013-07-22T07:57:34.372", 
+        "field3": 5.2999999999999998, 
+        "field0": "Kralova Hola", 
+        "field1": 1, 
+        "field4": false, 
+        "field5": 1, 
+        "the_geom": "POINT (-263550.5035727230715565 -1209000.1620407190639526)"
+    }
+},
+{
+    "pk": 2, 
+    "model": "test_app.testpoint", 
+    "fields": {
+        "field2": "2013-07-22T07:57:34.372", 
+        "field3": 7.5999999999999996, 
+        "field0": "Krivan", 
+        "field1": 1, 
+        "field4": true, 
+        "field5": 1, 
+        "the_geom": "POINT (-263689.9504071751143783 -1209134.0310017932206392)"
+    }
+},
+{
+    "pk": 3, 
+    "model": "test_app.testpoint", 
+    "fields": {
+        "field2": "2013-07-22T07:57:34.372", 
+        "field3": 3.8999999999999999, 
+        "field0": "Simonka", 
+        "field1": 1, 
+        "field4": false, 
+        "field5": 1, 
+        "the_geom": "POINT (-261670.7602443089417648 -1209340.4123167821671814)"
+    }
+},
+{
+    "pk": 4, 
+    "model": "test_app.testpoint", 
+    "fields": {
+        "field2": "2013-07-22T07:57:34.372", 
+        "field3": 4.0999999999999996, 
+        "field0": "Tajov", 
+        "field1": 1, 
+        "field4": true, 
+        "field5": 1, 
+        "the_geom": "POINT (-263483.5690921860514209 -1209379.4574304288253188)"
+    }
+},
+{
+    "pk": 5, 
+    "model": "test_app.testpoint", 
+    "fields": {
+        "field2": "2013-07-22T07:57:34.372", 
+        "field3": 1.2, 
+        "field0": "Jasna", 
+        "field1": 1, 
+        "field4": false, 
+        "field5": 1, 
+        "the_geom": "POINT (-263689.9504071751143783 -1209306.9450765138026327)"
+    }
+},
+{
+    "pk": 6, 
+    "model": "test_app.testpoint", 
+    "fields": {
+        "field2": "2013-07-22T07:57:34.372", 
+        "field3": 9.0999999999999996, 
+        "field0": "Gerlach", 
+        "field1": 1, 
+        "field4": true, 
+        "field5": 1, 
+        "the_geom": "POINT (-261854.8300657857034821 -1209139.6088751712813973)"
+    }
+},
+{
+    "pk": 1, 
+    "model": "test_app.testlinestring", 
+    "fields": {
+        "field2": "2013-07-22T07:39:10.262", 
+        "field3": 3.1400000000000001, 
+        "field0": "Nizke Tatry", 
+        "field1": 1, 
+        "field4": true, 
+        "field5": 2, 
+        "the_geom": "LINESTRING (0.0 0.0, 0.0 50.0, 50.0 50.0, 50.0 0.0, 0.0 0.0)"
+    }
+},
+{
+    "pk": 2, 
+    "model": "test_app.testlinestring", 
+    "fields": {
+        "field2": "2013-07-22T07:39:10.263", 
+        "field3": 2.5299999999999998, 
+        "field0": "Vysoke Tatry", 
+        "field1": 1, 
+        "field4": false, 
+        "field5": 3, 
+        "the_geom": "LINESTRING (1.0 3.0, 1.0 4.0, 1.0 5.0, 1.0 6.0, 1.0 7.0)"
+    }
+},
+{
+    "pk": 3, 
+    "model": "test_app.testlinestring", 
+    "fields": {
+        "field2": "2013-07-22T07:39:10.263", 
+        "field3": 5.6299999999999999, 
+        "field0": "Slanske vrchy", 
+        "field1": 1, 
+        "field4": false, 
+        "field5": 4, 
+        "the_geom": "LINESTRING (2.0 0.0, 3.0 50.0, 4.0 50.0, 5.0 0.0, 6.0 0.0)"
+    }
+},
+{
+    "pk": 4, 
+    "model": "test_app.testlinestring", 
+    "fields": {
+        "field2": "2013-07-22T07:39:10.264", 
+        "field3": 7.8399999999999999, 
+        "field0": "Kremnicke vrchy", 
+        "field1": 1, 
+        "field4": true, 
+        "field5": 1, 
+        "the_geom": "LINESTRING (0.0 0.0, 60.0 50.0, 5.0 5.0, 5.0 0.0, 1.0 0.0)"
+    }
+},
+{
+    "pk": 5, 
+    "model": "test_app.testlinestring", 
+    "fields": {
+        "field2": "2013-07-22T07:39:10.264", 
+        "field3": 45.399999999999999, 
+        "field0": "Nizke Tatry", 
+        "field1": 1, 
+        "field4": false, 
+        "field5": 1, 
+        "the_geom": "LINESTRING (1.0 0.0, 0.0 5.0, 5.0 5.0, 5.0 0.0, 0.0 0.0)"
+    }
+},
+{
+    "pk": 1, 
+    "model": "test_app.testpolygon", 
+    "fields": {
+        "field2": "2013-07-22T08:25:38.851", 
+        "field3": 1.2, 
+        "field0": "area1", 
+        "field1": 1, 
+        "field4": true, 
+        "field5": 1, 
+        "the_geom": "POLYGON ((0.0 0.0, -0.13 0.12, 0.0 1.0, 1.0 1.0, 1.0 0.0, 0.0 0.0))"
+    }
+},
+{
+    "pk": 2, 
+    "model": "test_app.testpolygon", 
+    "fields": {
+        "field2": "2013-07-22T08:25:38.851", 
+        "field3": 2.2999999999999998, 
+        "field0": "area2", 
+        "field1": 2, 
+        "field4": true, 
+        "field5": 1, 
+        "the_geom": "POLYGON ((2.0 0.0, 2.0 2.0, 0.0 0.0, 0.0 2.0, 2.0 0.0))"
+    }
+},
+{
+    "pk": 3, 
+    "model": "test_app.testpolygon", 
+    "fields": {
+        "field2": "2013-07-22T08:25:38.852", 
+        "field3": 3.3999999999999999, 
+        "field0": "area3", 
+        "field1": 3, 
+        "field4": false, 
+        "field5": 1, 
+        "the_geom": "POLYGON ((0.0 0.0, 0.0 3.0, 3.0 3.0, 3.0 0.0, 0.0 0.0))"
+    }
+},
+{
+    "pk": 4, 
+    "model": "test_app.testpolygon", 
+    "fields": {
+        "field2": "2013-07-22T08:25:38.852", 
+        "field3": 4.5, 
+        "field0": "area4", 
+        "field1": 4, 
+        "field4": false, 
+        "field5": 1, 
+        "the_geom": "POLYGON ((0.0 0.0, 0.0 4.0, 4.0 4.0, 4.0 0.0, 0.0 0.0))"
+    }
+},
+{
+    "pk": 5, 
+    "model": "test_app.testpolygon", 
+    "fields": {
+        "field2": "2013-07-22T08:25:38.852", 
+        "field3": 5.5999999999999996, 
+        "field0": "area5", 
+        "field1": 5, 
+        "field4": false, 
+        "field5": 1, 
+        "the_geom": "POLYGON ((0.0 0.0, 0.0 5.0, 5.0 5.0, 5.0 0.0, 0.0 0.0))"
+    }
+}
+]

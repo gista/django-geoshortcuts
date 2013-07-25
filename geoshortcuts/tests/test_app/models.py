@@ -14,7 +14,7 @@ class TestPoint(models.Model):
 	field4 = models.BooleanField()
 	field5 = models.ForeignKey(TestTable)
 
-	the_geom = models.PointField()
+	the_geom = models.PointField(srid=102067)
 	objects = models.GeoManager()
 
 	def __unicode__(self):
