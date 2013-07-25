@@ -56,7 +56,8 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 	* extent (django.contrib.gis.geos.Polygon instance) - limits features to features inside extent's bounds
 	* maxfeatures (int) - gives maximum number of rendered features based on priority field
 	* priorityfield (string) - name of the priority field used for reducing features
-	* properties ([string, string or callable, ...]) - list of model's non geometry fields names included in geojson
+	* properties ([(string, string or callable), ...]) - list of feature's non geometry attributes defined as couples \
+	  (title, value), where value can be field name or callable (that accepts a feature instance as argument and returns attribute's value)
 	* prettyprint (boolean) - flag influencing indentation used in geojson (for better readability)
 	'''
 
