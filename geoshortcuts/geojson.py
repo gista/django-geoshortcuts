@@ -114,7 +114,7 @@ def render_to_geojson(queryset, projection=None, simplify=None, extent=None, max
 			feat[GEOJSON_FIELD_PROPERTIES][title] = __simple_render_to_json(value)
 		feat[GEOJSON_FIELD_TYPE] = GEOJSON_VALUE_FEATURE
 		geom = getattr(item, geom_field)
-		if simplify is not None:
+		if simplify:
 			geom = geom.simplify(simplify)
 
 		# We have to use gdal.OGRGeometry geometry class directly and without srid parameter
