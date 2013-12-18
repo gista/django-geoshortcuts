@@ -1,2 +1,5 @@
 *.pyc
 settings.py
+/MANIFEST
+dist/
+build/
