@@ -4,7 +4,7 @@ from django.contrib.gis import gdal
 from django.contrib.gis.geos import Polygon
 from django.utils import simplejson
 
-from geoshortcuts import find_geom_field
+from geoshortcuts.utils import find_geom_field
 
 
 SPATIAL_REF_SITE = 'http://spatialreference.org/ref/epsg/'

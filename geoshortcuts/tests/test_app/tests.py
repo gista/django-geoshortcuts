@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.contrib.gis.geos import Polygon, LineString, Point
 from django.contrib.gis.gdal import DataSource
 
-from geoshortcuts import find_geom_field
+from geoshortcuts.utils import find_geom_field
 from geoshortcuts.geojson import render_to_geojson
 from test_app.models import *
 

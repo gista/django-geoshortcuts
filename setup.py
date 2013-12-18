@@ -17,7 +17,7 @@ classifiers = [
 
 setup(
 	name='django-geoshortcuts',
-	version='0.1',
+	version=".".join(map(str, __import__('geoshortcuts').VERSION)),
 	description='set of shortcuts for GeoDjango applications',
 	author='Marcel Dancak, Ivan Mincik, Matus Valo',
 	author_email='info@gista.sk',
